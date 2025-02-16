@@ -1,36 +1,28 @@
-def minimax(total, turn, alpha, beta):
-    if total == 20: return 0
-    if total > 20: return -1 if turn else 1
+MAX,MIN=1000,-1000
 
-    if turn:
-        best = -float('inf')
-        for i in range(1, 4):
-            best = max(best, minimax(total + i, False, alpha, beta))
-            alpha = max(alpha, best)
-            if beta <= alpha: break
+def minmax(depth,nodeIndex,maximizing_player,values,alpha,beta):
+    if depth==3:
+        return values[nodeIndex]
+    if maximizing_player:
+        best=MIN
+        for i in range(0,2):
+            val=minmax(depth+1,nodeIndex*2+i,False,values,alpha,beta)
+            best=max(best,val)
+            alpha=max(alpha,best)
+            if beta<=alpha:
+                break
+        return best
     else:
-        best = float('inf')
-        for i in range(1, 4):
-            best = min(best, minimax(total + i, True, alpha, beta))
-            beta = min(beta, best)
-            if beta <= alpha: break
-    return best
+        best=MAX
+        for i in range(0,2):
+            val=minmax(depth+1,nodeIndex*2+i,True,values,alpha,beta)
+            best=min(best,val)
+            beta=min(beta,best)
+            if beta<=alpha:
+                break
+        return best
+        
 
-total = 0
-
-while True:
-    human_move = int(input("Enter your move (1, 2, or 3): "))
-    if human_move not in [1, 2, 3]: continue
-    total += human_move
-    print(f"Total: {total}")
-    if total >= 20:
-      print("You win!")
-      break
-
-    print("AI thinking...")
-    ai_move = max(range(1, 4), key=lambda i: minimax(total + i, False, -float('inf'), float('inf')))
-    total += ai_move
-    print(f"AI adds {ai_move}. Total: {total}")
-    if total >= 20:
-      print("AI wins!")
-      break
+if __name__=='__main__':
+    values=[3, 5, 6, 9, 1, 2, 0, -1]
+    print("The optimal value is ",minmax(0,0,True,values,MIN,MAX))
